@@ -6,87 +6,36 @@
     <title>AraCare EMR - Doctor Console</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f3f4f6; height: 100vh; overflow: hidden; color: #1f2937; }
-
-        /* --- LAYOUT --- */
-        .app-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr 380px; /* LEFT | MAIN | RIGHT */
-            grid-template-rows: 70px 1fr; /* HEADER | CONTENT */
-            height: 100vh; width: 100vw;
-            gap: 20px; padding: 20px;
-        }
-
-        /* --- HEADER --- */
-        .header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; background: white; border-radius: 24px; padding: 0 30px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .doc-profile { display: flex; align-items: center; gap: 12px; background: #f9fafb; padding: 8px 16px; border-radius: 99px; border: 1px solid #e5e7eb; }
-
-        /* --- TILES (Bento Style) --- */
-        .tile { background: white; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid white; height: 100%; overflow: hidden; }
-        .tile-title { font-size: 14px; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-
-        /* --- LEFT PANEL --- */
-        .patient-card { text-align: center; margin-bottom: 24px; }
-        .avatar-placeholder { width: 80px; height: 80px; background: #e0f2fe; color: #0284c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; margin: 0 auto 16px; }
-        .pt-name { font-size: 20px; font-weight: 800; color: #111827; }
-        .pt-meta { font-size: 13px; color: #6b7280; margin-top: 4px; font-weight: 500; }
-        .allergy-badge { background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Inter', sans-serif; background: #f3f4f6; height: 100vh; overflow: hidden; color: #1f2937; margin: 0; }
         
-        .history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .history-item { padding: 14px; background: #f9fafb; border-radius: 16px; border: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; }
-        .history-item:hover { background: #eff6ff; border-color: #bfdbfe; }
-        .h-date { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; }
-        .h-diagnosis { font-size: 14px; font-weight: 600; color: #374151; margin-top: 2px; }
-
-        /* --- MIDDLE PANEL (SOAP) --- */
-        .vitals-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-        .vital-box { background: #f8fafc; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #e2e8f0; }
-        .vital-label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
-        .vital-input-group { display: flex; align-items: baseline; gap: 4px; }
-        .vital-input { width: 50px; background: transparent; font-size: 20px; font-weight: 800; color: #0f172a; text-align: center; outline: none; border-bottom: 2px solid transparent; transition: 0.2s; }
-        .vital-input:focus { border-bottom-color: #3b82f6; }
-        .vital-unit { font-size: 10px; color: #94a3b8; font-weight: 600; }
-
-        .soap-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding-right: 5px; }
-        .soap-section { position: relative; }
-        .soap-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .soap-badge { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: white; }
-        .soap-textarea { width: 100%; min-height: 120px; background: #f9fafb; border-radius: 16px; border: 1px solid #e5e7eb; padding: 16px; font-size: 15px; line-height: 1.6; outline: none; transition: 0.2s; resize: none; font-family: 'Inter', sans-serif; }
-        .soap-textarea:focus { background: white; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
-
-        /* COLORS for SOAP */
-        .bg-s { background: #3b82f6; } .bg-o { background: #f59e0b; } .bg-a { background: #10b981; } .bg-p { background: #8b5cf6; }
-
-        /* --- RIGHT PANEL --- */
-        .search-box { background: #f3f4f6; border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-        .search-input { background: transparent; border: none; outline: none; width: 100%; font-weight: 500; }
+        /* LAYOUT */
+        .app-grid { display: grid; grid-template-columns: 300px 1fr 350px; grid-template-rows: 70px 1fr; height: 100vh; gap: 20px; padding: 20px; }
         
-        .rx-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .rx-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 14px; background: #fffbeb; border: 1px solid #fcd34d; }
-        .rx-name { font-weight: 700; font-size: 14px; color: #92400e; }
-        .rx-dose { font-size: 12px; color: #b45309; }
+        /* COMPONENTS */
+        .header { grid-column: 1 / -1; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .tile { background: white; border-radius: 24px; padding: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: 100%; }
+        .scroll-area { overflow-y: auto; flex: 1; padding-right: 4px; }
+        
+        /* INPUTS */
+        .soap-textarea { width: 100%; min-height: 100px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; font-family: inherit; font-size: 14px; outline: none; resize: none; }
+        .soap-textarea:focus { background: white; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .soap-label { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
 
-        .action-bar { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 20px; }
-        .btn { padding: 14px; border-radius: 16px; font-weight: 700; text-align: center; cursor: pointer; transition: 0.1s; font-size: 14px; border: none; }
-        .btn:active { transform: scale(0.97); }
-        .btn-primary { background: #0f172a; color: white; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); }
-        .btn-secondary { background: #f1f5f9; color: #475569; }
-        .btn-danger { background: #fee2e2; color: #ef4444; }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        /* BUTTONS */
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 14px; background: #0f172a; color: white; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn:hover { background: #1e293b; transform: translateY(-1px); }
+        .btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -96,183 +45,87 @@
         const { useState } = React;
 
         const App = () => {
-            // Mock Data
-            const patient = {
-                name: "Sarah binti Ahmad",
-                id: "PT-2024-001",
-                age: 28,
-                gender: "Female",
-                allergy: "Penicillin",
-                history: [
-                    { date: "12 OCT 2023", dx: "Acute Pharyngitis" },
-                    { date: "05 AUG 2023", dx: "Gastritis" },
-                    { date: "22 JAN 2023", dx: "Migraine" }
-                ]
-            };
-
-            const [vitals, setVitals] = useState({ bp_sys: 120, bp_dia: 80, hr: 72, temp: 37.0 });
+            // DATA
+            const patient = { name: "Sarah binti Ahmad", id: "PT-001", age: 28, gender: "Female" };
+            
+            // STATE
             const [soap, setSoap] = useState({ s: "", o: "", a: "", p: "" });
-            const [rxList, setRxList] = useState([
-                { name: "Paracetamol 500mg", dose: "2 tab TDS x 3/7" }
-            ]);
+            const [isSaving, setIsSaving] = useState(false);
+
+            const handleFinish = () => {
+                console.log("Button Clicked"); // Debug check
+                setIsSaving(true);
+                
+                // SIMULATE SAVING (1 second delay)
+                setTimeout(() => {
+                    alert("✅ SUCCESS: Data Saved!\n\n(This is a demo. In the next step, we connect this to Firebase.)");
+                    setSoap({ s: "", o: "", a: "", p: "" }); // Reset form
+                    setIsSaving(false);
+                }, 1000);
+            };
 
             return (
                 <div className="app-grid">
                     
-                    {/* --- HEADER --- */}
+                    {/* 1. HEADER */}
                     <div className="header">
-                        <div className="logo-area">
-                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl">Ar</div>
-                            <div>
-                                <div className="font-black text-lg leading-tight tracking-tight">AraCare EMR</div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Clinic Management</div>
-                            </div>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">Ar</div>
+                            <div className="font-bold text-lg text-slate-800">AraCare EMR</div>
                         </div>
-                        <div className="doc-profile">
-                            <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold">DA</div>
-                            <span className="text-sm font-bold text-slate-700">Dr. Asyraf</span>
-                            <i className="ri-arrow-down-s-line text-slate-400"></i>
-                        </div>
+                        <div className="text-sm font-bold text-slate-500">Dr. Asyraf</div>
                     </div>
 
-                    {/* --- LEFT: PATIENT CONTEXT --- */}
+                    {/* 2. LEFT: PATIENT */}
                     <div className="tile">
-                        <div className="tile-title"><i className="ri-user-heart-line"></i> Patient Profile</div>
-                        
-                        <div className="patient-card">
-                            <div className="avatar-placeholder">SA</div>
-                            <h2 className="pt-name">{patient.name}</h2>
-                            <p className="pt-meta">{patient.age} y/o • {patient.gender} • ID: {patient.id}</p>
-                            {patient.allergy && (
-                                <div className="allergy-badge">
-                                    <i className="ri-alert-fill"></i> Allergy: {patient.allergy}
-                                </div>
-                            )}
+                        <div className="text-center mb-6 pt-4">
+                            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-3">SA</div>
+                            <h2 className="text-lg font-bold">{patient.name}</h2>
+                            <p className="text-sm text-slate-500">{patient.age}y • {patient.gender}</p>
                         </div>
-
-                        <div className="tile-title" style={{marginTop: '20px'}}><i className="ri-history-line"></i> Visit History</div>
-                        <div className="history-list">
-                            {patient.history.map((visit, i) => (
-                                <div key={i} className="history-item">
-                                    <div className="h-date">{visit.date}</div>
-                                    <div className="h-diagnosis">{visit.dx}</div>
-                                </div>
-                            ))}
+                        <div className="border-t pt-4">
+                            <p className="text-xs font-bold text-slate-400 uppercase mb-2">Alerts</p>
+                            <div className="bg-red-50 text-red-600 text-xs font-bold p-2 rounded-lg text-center">Allergy: Penicillin</div>
                         </div>
                     </div>
 
-                    {/* --- MIDDLE: WORKSPACE (SOAP) --- */}
-                    <div className="tile" style={{background: '#fcfcfc'}}>
-                        {/* VITALS ROW */}
-                        <div className="vitals-bar">
-                            <div className="vital-box">
-                                <span className="vital-label">BP (mmHg)</span>
-                                <div className="vital-input-group">
-                                    <input className="vital-input" value={vitals.bp_sys} onChange={(e)=>setVitals({...vitals, bp_sys:e.target.value})} />
-                                    <span className="text-slate-400">/</span>
-                                    <input className="vital-input" value={vitals.bp_dia} onChange={(e)=>setVitals({...vitals, bp_dia:e.target.value})} />
-                                </div>
-                            </div>
-                            <div className="vital-box">
-                                <span className="vital-label">Heart Rate</span>
-                                <div className="vital-input-group">
-                                    <input className="vital-input" value={vitals.hr} onChange={(e)=>setVitals({...vitals, hr:e.target.value})} />
-                                    <span className="vital-unit">bpm</span>
-                                </div>
-                            </div>
-                            <div className="vital-box">
-                                <span className="vital-label">Temp</span>
-                                <div className="vital-input-group">
-                                    <input className="vital-input" value={vitals.temp} onChange={(e)=>setVitals({...vitals, temp:e.target.value})} />
-                                    <span className="vital-unit">°C</span>
-                                </div>
-                            </div>
-                            <div className="vital-box cursor-pointer hover:bg-slate-100 transition">
-                                <span className="text-2xl text-slate-400">+</span>
-                                <span className="vital-label">Add More</span>
-                            </div>
-                        </div>
-
-                        {/* SOAP INPUTS */}
-                        <div className="soap-container">
-                            <div className="soap-section">
-                                <div className="soap-header">
-                                    <div className="soap-badge bg-s">S</div>
-                                    <span className="text-sm font-bold text-slate-600 uppercase">Subjective</span>
-                                </div>
-                                <textarea className="soap-textarea" placeholder="Chief complaint, history of presenting illness..." value={soap.s} onChange={(e)=>setSoap({...soap, s:e.target.value})}></textarea>
-                            </div>
-                            
-                            <div className="soap-section">
-                                <div className="soap-header">
-                                    <div className="soap-badge bg-o">O</div>
-                                    <span className="text-sm font-bold text-slate-600 uppercase">Objective</span>
-                                </div>
-                                <textarea className="soap-textarea" placeholder="Physical examination findings..." value={soap.o} onChange={(e)=>setSoap({...soap, o:e.target.value})}></textarea>
-                            </div>
-
-                            <div className="soap-section">
-                                <div className="soap-header">
-                                    <div className="soap-badge bg-a">A</div>
-                                    <span className="text-sm font-bold text-slate-600 uppercase">Assessment</span>
-                                </div>
-                                <textarea className="soap-textarea" placeholder="Diagnosis / Differential Diagnosis..." value={soap.a} onChange={(e)=>setSoap({...soap, a:e.target.value})}></textarea>
-                            </div>
-
-                            <div className="soap-section">
-                                <div className="soap-header">
-                                    <div className="soap-badge bg-p">P</div>
-                                    <span className="text-sm font-bold text-slate-600 uppercase">Plan</span>
-                                </div>
-                                <textarea className="soap-textarea" placeholder="Treatment plan, advice given..." value={soap.p} onChange={(e)=>setSoap({...soap, p:e.target.value})}></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- RIGHT: TOOLS & RX --- */}
+                    {/* 3. MIDDLE: SOAP NOTES */}
                     <div className="tile">
-                        <div className="tile-title"><i className="ri-capsule-fill"></i> Prescription</div>
+                        <div className="flex items-center gap-2 mb-4">
+                            <i className="ri-file-edit-line text-blue-600 text-xl"></i>
+                            <h2 className="font-bold text-lg">Consultation Notes</h2>
+                        </div>
+                        <div className="scroll-area">
+                            <label className="soap-label text-slate-500">Subjective</label>
+                            <textarea className="soap-textarea" placeholder="Patient's complaints..." value={soap.s} onChange={(e) => setSoap({...soap, s: e.target.value})}></textarea>
+
+                            <label className="soap-label text-slate-500">Objective</label>
+                            <textarea className="soap-textarea" placeholder="Physical findings..." value={soap.o} onChange={(e) => setSoap({...soap, o: e.target.value})}></textarea>
+
+                            <label className="soap-label text-slate-500">Assessment</label>
+                            <textarea className="soap-textarea" placeholder="Diagnosis..." value={soap.a} onChange={(e) => setSoap({...soap, a: e.target.value})}></textarea>
+
+                            <label className="soap-label text-slate-500">Plan</label>
+                            <textarea className="soap-textarea" placeholder="Treatment..." value={soap.p} onChange={(e) => setSoap({...soap, p: e.target.value})}></textarea>
+                        </div>
+                    </div>
+
+                    {/* 4. RIGHT: ACTIONS */}
+                    <div className="tile bg-slate-50">
+                        <h2 className="font-bold text-lg mb-4">Actions</h2>
+                        <div className="flex-1"></div> {/* Spacer */}
                         
-                        <div className="search-box">
-                            <i className="ri-search-line text-slate-400"></i>
-                            <input className="search-input" placeholder="Search Drug / Item..." />
-                        </div>
-
-                        <div className="rx-list">
-                            {rxList.map((rx, i) => (
-                                <div key={i} className="rx-item">
-                                    <div>
-                                        <div className="rx-name">{rx.name}</div>
-                                        <div className="rx-dose">{rx.dose}</div>
-                                    </div>
-                                    <i className="ri-close-circle-fill text-orange-300 cursor-pointer hover:text-orange-500"></i>
-                                </div>
-                            ))}
-                            <div className="text-center p-4 border-2 border-dashed border-slate-200 rounded-xl text-xs font-bold text-slate-400 cursor-pointer hover:bg-slate-50 hover:border-slate-300 transition">
-                                + Add Custom Item
-                            </div>
-                        </div>
-
-                        <div className="mt-6">
-                            <div className="tile-title"><i className="ri-file-text-line"></i> Templates</div>
-                            <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg cursor-pointer hover:bg-blue-100 hover:text-blue-600">URTI Pack</span>
-                                <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg cursor-pointer hover:bg-blue-100 hover:text-blue-600">Gastritis</span>
-                                <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg cursor-pointer hover:bg-blue-100 hover:text-blue-600">MC (1 Day)</span>
-                            </div>
-                        </div>
-
-                        <div className="action-bar">
-                            <button className="btn btn-secondary">Save Draft</button>
-                            <button className="btn btn-primary" onClick={() => alert("Consultation Finished! Sending to Pharmacy...")}>Finish & Send</button>
-                        </div>
+                        <button className="btn" onClick={handleFinish}>
+                            {isSaving ? "Saving..." : "Finish & Save"}
+                        </button>
                     </div>
 
                 </div>
             );
         };
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
